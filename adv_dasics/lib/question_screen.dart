@@ -5,7 +5,10 @@ import 'package:adv_dasics/answer_button.dart';
 import 'package:adv_dasics/data/questions.dart';
 
 class QuestionScreen extends StatefulWidget {
-  const QuestionScreen({super.key});
+  const QuestionScreen({super.key, required this.onSelectAnswer});
+
+  final void Function(String answer) onSelectAnswer;
+
   @override
   State<QuestionScreen> createState() {
     return _QuestionScreenState();
@@ -15,9 +18,9 @@ class QuestionScreen extends StatefulWidget {
 class _QuestionScreenState extends State<QuestionScreen> {
   var correntQquestionIndex = 0;
 
-  void anserQuextion() {
-    // correntQquestionIndex = correntQquestionIndex + 1;
-    // correntQquestionIndex += 1;
+  void anwserQuextion(String answer) {
+    widget.onSelectAnswer(answer);
+
     setState(() {
       correntQquestionIndex++;
     });
@@ -47,7 +50,9 @@ class _QuestionScreenState extends State<QuestionScreen> {
             const SizedBox(height: 30),
             ...currentQuestion.getShaffledAnswers().map((answer) {
               return AnswerButton(
-                onTap: anserQuextion,
+                onTap: () {
+                  anwserQuextion(answer);
+                },
                 answerText: answer,
               );
             }),
