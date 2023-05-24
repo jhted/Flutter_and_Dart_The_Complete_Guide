@@ -7,19 +7,21 @@ class ResultsScreen extends StatelessWidget {
   const ResultsScreen({
     super.key,
     required this.choosenAnswers,
+    required this.resetAapp,
   });
 
   final List<String> choosenAnswers;
+  final void Function() resetAapp;
 
   List<Map<String, Object>> getSummeryData() {
     final List<Map<String, Object>> summery = [];
 
     for (var i = 0; i < choosenAnswers.length; i++) {
       summery.add({
-        'question_index':i,
-        'question':questions[i].text,
-        'correct_answer':questions[i].answers[0],
-        'user_answer':choosenAnswers[i]
+        'question_index': i,
+        'question': questions[i].text,
+        'correct_answer': questions[i].answers[0],
+        'user_answer': choosenAnswers[i]
       });
     }
 
@@ -28,6 +30,11 @@ class ResultsScreen extends StatelessWidget {
 
   @override
   Widget build(context) {
+    final summeryData = getSummeryData();
+    final numTotalQuestions = questions.length;
+    final numCoreectQuestions = summeryData.where((x) {
+      return x['correct_answer'] == x['user_answer'];
+    }).length;
     return SizedBox(
       width: double.infinity,
       child: Container(
@@ -36,7 +43,7 @@ class ResultsScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "You have answered X out of Y questions correctly!",
+              "You have answered $numCoreectQuestions out of $numTotalQuestions questions correctly!",
               style: GoogleFonts.lato(
                 color: const Color.fromARGB(255, 255, 206, 253),
                 fontSize: 24,
@@ -45,10 +52,10 @@ class ResultsScreen extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 30),
-            QuestionSummery(summeryData: getSummeryData()),
+            QuestionSummery(summeryData: summeryData),
             const SizedBox(height: 30),
             TextButton(
-              onPressed: () {},
+              onPressed: resetAapp,
               child: const Text('Restart Quiz!'),
             ),
           ],
