@@ -35,10 +35,16 @@ class _ExpensesState extends State<Expenses> {
         category: Category.travel),
   ];
 
+  void _addNewExpense(Expense newExpense) {
+    setState(() {
+      _registeredExpences.add(newExpense);
+    });
+  }
+
   void _openAddExpenseOverlay() {
     showModalBottomSheet(
       context: context,
-      builder: (context) => const NewExpense(),
+      builder: (context) => NewExpense(addNewExpense: _addNewExpense),
     );
   }
 
