@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meals/models/meal.dart';
+import 'package:meals/widgets/meal_item.dart';
 
 class MealsScreen extends StatelessWidget {
   const MealsScreen({
@@ -41,7 +42,7 @@ class MealsScreen extends StatelessWidget {
         itemCount: meals.length,
         itemBuilder: (context, index) => Dismissible(
           key: ValueKey(meals[index]),
-          child: const Text("data"),
+          child: MealItem(meal:meals[index]),
         ),
       );
     }
