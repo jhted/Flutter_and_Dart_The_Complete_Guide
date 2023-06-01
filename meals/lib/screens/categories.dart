@@ -12,10 +12,10 @@ class CategoriesScreen extends StatelessWidget {
   Widget build(context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("pick you category"),
+        title: const Text("pick you category"),
       ),
       body: GridView(
-        padding: EdgeInsets.all(22),
+        padding: const EdgeInsets.all(22),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           childAspectRatio: 1.5,
