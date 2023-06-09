@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import 'package:meals/data/dummy_data.dart';
 
-import 'package:meals/models/meal.dart';
+import 'package:meals/providers/favorutes_provider.dart';
+import 'package:meals/providers/filters_provider.dart';
 import 'package:meals/providers/meals_provider.dart';
 import 'package:meals/screens/categories.dart';
 import 'package:meals/screens/filters.dart';
@@ -26,7 +27,6 @@ class TabsScreen extends ConsumerStatefulWidget {
 
 class _TabsScreenState extends ConsumerState<TabsScreen> {
   int _selectedPageIndex = 0;
-  final List<Meal> _favoriteMeals = [];
   Map<Filter, bool> _selectedfilters = kInitialFilters;
 
   void _showInfoMessage(String message) {
@@ -36,22 +36,6 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
         content: Text(message),
       ),
     );
-  }
-
-  void _toogleFavoriteStatus(Meal meal) {
-    final isExisting = _favoriteMeals.contains(meal);
-    var alertMessage = '';
-
-    setState(() {
-      if (isExisting) {
-        _favoriteMeals.remove(meal);
-        alertMessage = 'Meal is no longer a favorite';
-      } else {
-        _favoriteMeals.add(meal);
-        alertMessage = 'Marked as a favorite!';
-      }
-      _showInfoMessage(alertMessage);
-    });
   }
 
   void _selectPage(int index) {
@@ -96,15 +80,14 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
     }).toList();
 
     Widget activeScreen = CategoriesScreen(
-      onToggleFavorite: _toogleFavoriteStatus,
       availebleMeals: availebleMeals,
     );
     String activePageTitle = 'Categories';
 
     if (_selectedPageIndex == 1) {
+      final favoriteMeals = ref.watch(favoriteMealsProvider);
       activeScreen = MealsScreen(
-        meals: _favoriteMeals,
-        onToggleFavorite: _toogleFavoriteStatus,
+        meals: favoriteMeals,
       );
       activePageTitle = 'Your Favorites';
     }
