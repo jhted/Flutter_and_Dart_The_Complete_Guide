@@ -19,6 +19,8 @@ class GroceryList extends StatefulWidget {
 
 class _GroceryListState extends State<GroceryList> {
   List<GroceryItem> _groceryItems = [];
+  bool _isLoading = true;
+  String? _error;
 
   @override
   void initState() {
@@ -29,29 +31,48 @@ class _GroceryListState extends State<GroceryList> {
   void _loadItems() async {
     final url = Uri.https(
         'flutter-prep-a2e7c-default-rtdb.firebaseio.com', 'shopping-list.json');
-    final responce = await http.get(url);
-    final Map<String, dynamic> listData = json.decode(responce.body);
-    List<GroceryItem> loadedItems = [];
-    for (final item in listData.entries) {
-      final category = categories.entries
-          .firstWhere(
-            (cartItem) => cartItem.value.title == item.value['category'],
-          )
-          .value;
+    // final url = Uri.https('fno.firebaseio.com', 'shopping-list.json');
+    try {
+      final responce = await http.get(url);
+      if (responce.statusCode >= 400) {
+        setState(() {
+          _error = 'Faild to fatch data. Please try again later.';
+        });
+      }
+      if (responce.body == 'null') {
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+      final Map<String, dynamic> listData = json.decode(responce.body);
+      List<GroceryItem> loadedItems = [];
+      for (final item in listData.entries) {
+        final category = categories.entries
+            .firstWhere(
+              (cartItem) => cartItem.value.title == item.value['category'],
+            )
+            .value;
 
-      loadedItems.add(
-        GroceryItem(
-          id: item.key,
-          name: item.value['name'],
-          quantity: item.value['quantity'],
-          category: category,
-        ),
-      );
+        loadedItems.add(
+          GroceryItem(
+            id: item.key,
+            name: item.value['name'],
+            quantity: item.value['quantity'],
+            category: category,
+          ),
+        );
+      }
+
+      setState(() {
+        _groceryItems = loadedItems;
+        _isLoading = false;
+      });
+    } catch (e) {
+        setState(() {
+          _error = 'something whent wrong. Please try again later.';
+        });
     }
-
-    setState(() {
-      _groceryItems = loadedItems;
-    });
   }
 
   void _addItem() async {
@@ -70,17 +91,33 @@ class _GroceryListState extends State<GroceryList> {
     });
   }
 
-  void _removeItem(GroceryItem item) {
+  void _removeItem(GroceryItem item) async {
+    final index = _groceryItems.indexOf(item);
     setState(() {
       _groceryItems.remove(item);
     });
+
+    final url = Uri.https('flutter-prep-a2e7c-default-rtdb.firebaseio.com',
+        'shopping-list/${item.id}.json');
+
+    final response = await http.delete(url);
+
+    if (response.statusCode >= 400) {
+      setState(() {
+        _groceryItems.insert(index, item);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget content = const Center(
-      child: Text("No items added yet."),
-    );
+    Widget content = const Center(child: Text("No items added yet."));
+
+    if (_isLoading) {
+      content = const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
 
     if (_groceryItems.isNotEmpty) {
       content = ListView.builder(
@@ -101,6 +138,10 @@ class _GroceryListState extends State<GroceryList> {
           ),
         ),
       );
+    }
+
+    if (_error != null) {
+      content = Center(child: Text(_error!));
     }
     return Scaffold(
       appBar: AppBar(
