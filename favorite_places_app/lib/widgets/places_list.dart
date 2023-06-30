@@ -19,22 +19,29 @@ class PlacesList extends StatelessWidget {
         ),
       );
     }
-    return ListView.builder(
-      itemCount: plases.length,
-      itemBuilder: (context, index) => ListTile(
-        title: Text(
-          plases[index].title,
-          style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                color: Theme.of(context).colorScheme.onBackground,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ListView.builder(
+        itemCount: plases.length,
+        itemBuilder: (context, index) => ListTile(
+          leading: CircleAvatar(
+            radius: 26,
+            backgroundImage: FileImage(plases[index].image),
+          ),
+          title: Text(
+            plases[index].title,
+            style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  color: Theme.of(context).colorScheme.onBackground,
+                ),
+          ),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (ctx) => PlaceDetailScreen(place: plases[index]),
               ),
+            );
+          },
         ),
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (ctx) => PlaceDetailScreen(place: plases[index]),
-            ),
-          );
-        },
       ),
     );
   }
