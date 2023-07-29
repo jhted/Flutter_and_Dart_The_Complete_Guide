@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:favorite_places_app/screens/map.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImageInput extends StatefulWidget {
@@ -25,7 +27,7 @@ class _ImageInputState extends State<ImageInput> {
     if (pickedImage == null) {
       return;
     }
-  
+
     setState(() {
       _selectedImage = File(pickedImage.path);
     });
